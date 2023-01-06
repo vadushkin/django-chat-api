@@ -34,7 +34,7 @@ class Authentication(BaseAuthentication):
             return None
 
         token = headers["Authorization"][7:]
-        decoded_data = Authentication._verify_token(token)
+        decoded_data = Authentication.verify_token(token)
 
         if not decoded_data:
             return None
@@ -42,7 +42,7 @@ class Authentication(BaseAuthentication):
         return decoded_data
 
     @staticmethod
-    def _verify_token(token):
+    def verify_token(token):
         try:
             decoded_data = jwt.decode(
                 token,

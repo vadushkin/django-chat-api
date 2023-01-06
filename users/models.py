@@ -3,7 +3,7 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
-    def _create_user(self, username, password, **extra_fields):
+    def create_user(self, username, password, **extra_fields):
         if not username:
             raise ValueError("Username field is required")
 
@@ -24,7 +24,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(username, password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -41,3 +41,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.username}"
+
+
+class Jwt(models.Model):
+    user = models.OneToOneField(
+        to=CustomUser,
+        related_name="login_user",
+        on_delete=models.CASCADE
+    )
+    access = models.TextField()
+    refresh = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
