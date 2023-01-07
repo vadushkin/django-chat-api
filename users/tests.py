@@ -45,9 +45,9 @@ class TestGenericFunctions(APITestCase):
 
 
 class TestAuthentication(APITestCase):
-    login_url = "/user/login/"
-    register_url = "/user/register/"
-    refresh_url = "/user/refresh/"
+    login_url = "/user/login"
+    register_url = "/user/register"
+    refresh_url = "/user/refresh"
 
     def test_register(self):
         # test case
@@ -118,7 +118,7 @@ class TestAuthentication(APITestCase):
 
 
 class TestUserInformation(APITestCase):
-    profile_url = "/user/profile/"
+    profile_url = "/user/profile"
 
     def setUp(self):
         self.user = CustomUser.objects.create(

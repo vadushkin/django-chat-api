@@ -106,4 +106,4 @@ class RefreshView(APIView):
 class UserProfileView(ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)

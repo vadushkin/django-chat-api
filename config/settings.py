@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     # applications
     'users',
+    'chat',
 
     # libraries
     'rest_framework',
