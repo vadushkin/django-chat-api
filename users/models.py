@@ -43,6 +43,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return f"{self.username}"
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        to=CustomUser,
+        related_name="user_profile",
+        on_delete=models.CASCADE
+    )
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    caption = models.CharField(max_length=250)
+    about = models.TextField()
+    profile_picture = models.ImageField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}"
+
+
 class Jwt(models.Model):
     user = models.OneToOneField(
         to=CustomUser,
