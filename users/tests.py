@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 
+from .models import CustomUser
 from .views import get_random, get_access_token, get_refresh_token
 
 
@@ -114,3 +115,32 @@ class TestAuthentication(APITestCase):
         # check if we get tokens
         self.assertTrue(result["access"])
         self.assertTrue(result["refresh"])
+
+
+class TestUserInformation(APITestCase):
+    profile_url = "/user/profile/"
+
+    def setUp(self):
+        self.user = CustomUser.objects.create(
+            username="Oak",
+            password="OakCool"
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def test_user_profile_post(self):
+        test_payload = {
+            "user": self.user.id,
+            "first_name": "Oak-small",
+            "last_name": "Cool",
+            "caption": "I'm the Oak",
+            "about": "Cool-nice dude, don't have complexes",
+        }
+
+        response = self.client.post(self.profile_url, data=test_payload)
+        result = response.json()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(result["first_name"], "Oak-small")
+        self.assertEqual(result["last_name"], "Cool")
+        self.assertEqual(result["caption"], "I'm the Oak")
+        self.assertEqual(result["about"], "Cool-nice dude, don't have complexes")
