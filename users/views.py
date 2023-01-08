@@ -1,10 +1,12 @@
 import random
+import re
 import string
 from datetime import datetime, timedelta
 
 import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -73,7 +75,7 @@ class RegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        CustomUser.objects.create_user(**serializer.validated_data)
+        CustomUser.objects._create_user(**serializer.validated_data)
 
         return Response({"success": "User created."}, status=201)
 
@@ -107,3 +109,43 @@ class UserProfileView(ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        data = self.request.query_params.dict()
+        keyword = data.get("keyword", None)
+
+        if keyword:
+            search_fields = (
+                "user__username", "first_name", "last_name"
+            )
+            query = self.get_query(keyword, search_fields)
+            return self.queryset.filter(query).distinct()
+
+        return self.queryset
+
+    @staticmethod
+    def get_query(query_string, search_fields):
+        """Return a query, that us a combination of Q objects.
+        That combination aims to search keywords within a model by
+        testing the given search fields.
+        """
+        query = None
+        terms = UserProfileView.normalize_query(query_string)
+        for term in terms:
+            or_query = None
+            for field_name in search_fields:
+                q = Q(**{"%s__icontains" % field_name: term})
+                if or_query is None:
+                    or_query = q
+                else:
+                    or_query = or_query | q
+            if query is None:
+                query = or_query
+            else:
+                query = query & or_query
+        return query
+
+    @staticmethod
+    def normalize_query(query_string, find_terms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                        norm_space=re.compile(r'\s{2,}').sub):
+        return [norm_space(' ', (t[0] or t[1]).strip()) for t in find_terms(query_string)]

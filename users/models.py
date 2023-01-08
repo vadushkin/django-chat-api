@@ -3,14 +3,13 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, password, **extra_fields):
+    def _create_user(self, username, password, **extra_fields):
         if not username:
             raise ValueError("Username field is required")
 
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
-
         return user
 
     def create_superuser(self, username, password, **extra_fields):
@@ -24,7 +23,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self.create_user(username, password, **extra_fields)
+        return self._create_user(username, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -45,7 +44,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
-        to=CustomUser,
+        CustomUser,
         related_name="user_profile",
         on_delete=models.CASCADE
     )
@@ -63,7 +62,7 @@ class UserProfile(models.Model):
 
 class Jwt(models.Model):
     user = models.OneToOneField(
-        to=CustomUser,
+        CustomUser,
         related_name="login_user",
         on_delete=models.CASCADE
     )
