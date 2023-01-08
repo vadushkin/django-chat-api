@@ -100,6 +100,14 @@ docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-inline
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
 
 [[package]]
+name = "psycopg2-binary"
+version = "2.9.5"
+description = "psycopg2 - Python-PostgreSQL Database Adapter"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "pyjwt"
 version = "2.6.0"
 description = "JSON Web Token implementation in Python"
@@ -182,7 +190,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "3c18dc4e083137f0d098f1c3f86a27df2dcc2f8f8ae9426585bc2117a5dfd058"
+content-hash = "94c931c4738240e79cf5fa5e9666332d23da6a87daf46af37fb07d0c0a3d63ad"
 
 [metadata.files]
 asgiref = []
@@ -194,6 +202,7 @@ django-rest-framework = []
 djangorestframework = []
 idna = []
 pillow = []
+psycopg2-binary = []
 pyjwt = []
 python-dotenv = []
 pytz = []

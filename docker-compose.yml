@@ -1,5 +1,8 @@
 version: "3"
 
+volumes:
+  postgres_volume:
+
 services:
   backend:
     build: .
@@ -10,7 +13,19 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - postgres
+        postgres:
+
+  db:
+    build: db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    networks:
+        postgres:
+    ports:
+      - "5433:5432"
 
 networks:
   postgres:
