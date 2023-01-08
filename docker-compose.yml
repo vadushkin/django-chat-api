@@ -15,6 +15,18 @@ services:
     networks:
         postgres:
 
+  socket:
+    build: socket_service
+    command: npm start
+    restart: unless-stopped
+    volumes:
+      - ./socket_service:/chatsocket
+      - /chatsocket/node_modules
+    ports:
+      - "9000:9000"
+    networks:
+      - postgres
+
   db:
     build: db
     restart: always
