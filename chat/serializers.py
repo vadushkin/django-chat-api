@@ -4,7 +4,7 @@ from .models import Message, MessageAttachment
 
 class MessageAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
-        models = MessageAttachment
+        model = MessageAttachment
         fields = "__all__"
 
 

@@ -6,12 +6,21 @@ from .serializers import MessageSerializer, MessageAttachment
 
 
 class MessageView(ModelViewSet):
-    queryset = Message.objects.select_related("sender", "receiver")
+    queryset = Message.objects.select_related(
+        "sender", "receiver").prefetch_related("message_attachments")
     serializer_class = MessageSerializer
     permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
+        try:
+            request.data._mutable = True
+        except Exception as _ex:
+            print(_ex)
+
         attachments = request.data.pop("attachments", None)
+
+        if str(request.user.id) != str(request.data.get("sender_id", None)):
+            raise Exception("Only sender can create a message")
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -27,6 +36,11 @@ class MessageView(ModelViewSet):
         return Response(serializer.data, status=201)
 
     def update(self, request, *args, **kwargs):
+        try:
+            request.data._mutable = True
+        except Exception as _ex:
+            print(_ex)
+
         attachments = request.data.pop("attachments", None)
         instance = self.get_object()
 

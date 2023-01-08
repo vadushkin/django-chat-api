@@ -15,10 +15,10 @@ class Authentication(BaseAuthentication):
         if not data:
             return None, None
 
-        return self._get_user(data["user_id"]), None
+        return self.get_user(data["user_id"]), None
 
     @staticmethod
-    def _get_user(user_id):
+    def get_user(user_id):
         try:
             user = CustomUser.objects.get(id=user_id)
         except CustomUser.DoesNotExist:
