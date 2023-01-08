@@ -18,13 +18,13 @@ class TestMessage(APITestCase):
         self.client.force_authenticate(user=self.sender)
 
     def test_post_message(self):
-        payload = {
+        test_payload = {
             "sender_id": self.sender.id,
             "receiver_id": self.receiver.id,
             "message": "test message",
         }
 
-        response = self.client.post(self.message_url, data=payload)
+        response = self.client.post(self.message_url, data=test_payload)
         result = response.json()
 
         self.assertEqual(response.status_code, 201)
@@ -32,3 +32,43 @@ class TestMessage(APITestCase):
         self.assertEqual(result["message"], "test message")
         self.assertEqual(result["sender"]["id"], self.sender.id)
         self.assertEqual(result["receiver"]["id"], self.receiver.id)
+
+    def test_update_message(self):
+        test_payload = {
+            "sender_id": self.sender.id,
+            "receiver_id": self.receiver.id,
+            "message": "test message",
+        }
+
+        self.client.post(self.message_url, data=test_payload)
+
+        test_payload = {
+            "message": "test message updated",
+            "is_read": True
+        }
+        response = self.client.patch(
+            self.message_url + "/1", data=test_payload)
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result["message"], "test message updated")
+        self.assertEqual(result["is_read"], True)
+
+    def test_delete_message(self):
+        test_payload = {
+            "sender_id": self.sender.id,
+            "receiver_id": self.receiver.id,
+            "message": "test message",
+
+        }
+        self.client.post(self.message_url, data=test_payload)
+
+        response = self.client.delete(
+            self.message_url + "/1", data=test_payload)
+
+        self.assertEqual(response.status_code, 204)
+
+    def test_get_message(self):
+        response = self.client.get(
+            self.message_url + f"?user_id={self.receiver.id}")
+        self.assertEqual(response.status_code, 200)
