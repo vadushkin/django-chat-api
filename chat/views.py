@@ -1,3 +1,7 @@
+import json
+import requests
+
+from django.conf import settings
 from django.db.models import Q
 
 from users.permissions import IsAuthenticatedCustom
@@ -5,6 +9,30 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from .models import Message
 from .serializers import MessageSerializer, MessageAttachment
+
+
+def handle_request(serializer):
+    notification = {
+        "message": serializer.data.get("message"),
+        "from": serializer.data.get("sender"),
+        "receiver": serializer.data.get("receiver").get("id")
+    }
+
+    headers = {
+        'Content-Type': 'application/json',
+    }
+
+    try:
+        requests.post(
+            settings.SOCKET_SERVER,
+            json.dumps(notification),
+            headers=headers
+        )
+    except Exception as _ex:
+        print(_ex)
+        pass
+
+    return True
 
 
 class MessageView(ModelViewSet):
@@ -45,6 +73,8 @@ class MessageView(ModelViewSet):
             message_data = self.get_queryset().get(id=serializer.data["id"])
             return Response(self.serializer_class(message_data).data, status=201)
 
+        handle_request(serializer)
+
         return Response(serializer.data, status=201)
 
     def update(self, request, *args, **kwargs):
@@ -72,5 +102,7 @@ class MessageView(ModelViewSet):
 
             message_data = self.get_object()
             return Response(self.serializer_class(message_data).data, status=200)
+
+        handle_request(serializer)
 
         return Response(serializer.data, status=200)

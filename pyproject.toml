@@ -11,6 +11,8 @@ python-dotenv = "^0.21.0"
 django-rest-framework = "^0.1.0"
 PyJWT = "^2.6.0"
 Pillow = "^9.4.0"
+requests = "^2.28.1"
+django-cors-headers = "^3.13.0"
 
 [tool.poetry.dev-dependencies]
 
